@@ -1,6 +1,6 @@
 #Name: Portable Development Setup
 #Created: 2/13/2017
-#Last updated: 2/16/2017
+#Last updated: 2/18/2017
 #Author: Alex Ireland
 
 
@@ -28,7 +28,7 @@ function Prompt-Path
 		Write-Error "Invalid path entered"		
 	}
 	
-	return $Path.TrimEnd('\');
+	return $Path
 }
 
 function Prompt-Confirmation([String] $Message) 
@@ -47,9 +47,10 @@ function Prompt-Confirmation([String] $Message)
 	return $result
 }
 
+#################################################################
+
 #Prompt the user for an installation path
 $Folder = Prompt-Path "Select an installation folder"
-Write-Host "Installing path" $Folder
 
 #Create file structure
 #
@@ -62,14 +63,28 @@ Write-Host "Installing path" $Folder
 
 $confirmInstallation = Prompt-Confirmation("Installation will delete all contents of the installation path. Are you sure you want to install?")
 
-if ($confirmInstallation)
+if (-not $confirmInstallation)
 {
-	New-Item $Folder\Tools -type Directory
+	exit
 }
 
+$ToolsDirectory = Join-Path -path $Folder -childpath "Tools"
+New-Item $ToolsDirectory -type Directory -Force
+
+$ProjectsDirectory = Join-Path -path $Folder -childpath "Projects"
+New-Item $ProjectsDirectory -type Directory -Force
+
+$SandboxDirectory = Join-Path -path $Folder -childpath "Sandbox"
+New-Item $SandboxDirectory -type Directory -Force
+
+#################################################################
+
+#Check if Chocolatey is installed
 #Get default package installation path for Chocolatey and save it
 #Set the default package installation path to the user selected path
 #Install packages
 #Reset the default package installation path
+
+#################################################################
 
 #Set up personalizations
