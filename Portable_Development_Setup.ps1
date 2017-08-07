@@ -3,7 +3,6 @@
 #Last updated: 2/18/2017
 #Author: Alex Ireland
 
-
 #Prompt for a path
 function Prompt-Path-Dialog ([String] $Description)
 {
@@ -25,7 +24,8 @@ function Prompt-Path
 	
 	if (!$ValidPath)
 	{
-		Write-Error "Invalid path entered"		
+		Write-Error "Invalid path entered"	
+		exit	
 	}
 	
 	return $Path
@@ -58,6 +58,7 @@ $Folder = Prompt-Path "Select an installation folder"
 #|_Tools
 #  |_Cmder
 #  |_VSCode
+#  |_...
 #|_Projects
 #|_Sandbox
 
@@ -71,6 +72,18 @@ if (-not $confirmInstallation)
 $ToolsDirectory = Join-Path -path $Folder -childpath "Tools"
 New-Item $ToolsDirectory -type Directory -Force
 
+$CmderPath = Join-Path -path $ToolsDirectory -childpath "Cmder"
+New-Item $CmderPath -type Directory -Force
+
+$NodeJsPath = Join-Path -path $ToolsDirectory -childpath "Nodejs"
+New-Item $NodeJsPath -type Directory -Force
+
+$ElectronPath = Join-Path -path $ToolsDirectory -childpath "Electron"
+New-Item $ElectronPath -type Directory -Force
+
+$VSCodePath = Join-Path -path $ToolsDirectory -childpath "VSCode"
+New-Item $VSCodePath -type Directory -Force
+
 $ProjectsDirectory = Join-Path -path $Folder -childpath "Projects"
 New-Item $ProjectsDirectory -type Directory -Force
 
@@ -80,10 +93,20 @@ New-Item $SandboxDirectory -type Directory -Force
 #################################################################
 
 #Check if Chocolatey is installed
-#Get default package installation path for Chocolatey and save it
-#Set the default package installation path to the user selected path
+$ChocolateyVersion = choco
+if (-not $ChocolateyVersion)
+{
+	Write-Error "Chocolatey is required to install the development tools."
+}
+
+#Test path as a source for the packages
+$ChocoTestPath = "C:\Users\Alex\Documents\Development\Choco_Repository"
+
 #Install packages
-#Reset the default package installation path
+choco install cmder.portable --source $ChocoTestPath -y -r --force --package-parameters="/InstallationPath:'$CmderPath'"
+choco install nodejs.portable --source $ChocoTestPath -y -r --force --package-parameters="/InstallationPath:'$NodeJsPath'"
+choco install electron.portable --source $ChocoTestPath -y -r --force --package-parameters="/InstallationPath:'$ElectronPath'"
+choco install visualstudiocode.portable --source $ChocoTestPath -y -r --force --package-parameters="/InstallationPath:'$VSCodePath'"
 
 #################################################################
 
